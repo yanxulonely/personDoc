@@ -48,19 +48,19 @@ const DocsList: React.FC = () => {
     // CSS
     {
       title: 'CSS 基础知识',
-      path: '/docs/general/basic.md',
+      path: '/docs/css/basic.md',
       category: 'css',
       subcategory: '基础教程'
     },
     {
       title: 'CSS Flexbox 布局',
-      path: '/docs/general/flexbox.md',
+      path: '/docs/css/flexbox.md',
       category: 'css',
       subcategory: '布局'
     },
     {
       title: 'CSS Grid 布局',
-      path: '/docs/general/grid.md',
+      path: '/docs/css/grid.md',
       category: 'css',
       subcategory: '布局'
     },
@@ -93,7 +93,7 @@ const DocsList: React.FC = () => {
     // PWA
     {
       title: 'PWA技术调研报告',
-      path: '/docs/pwa/PWA技术调研报告-海外AR定损应用可行性分析.md',
+      path: '/docs/pwa/pwa-research.md',
       category: 'pwa',
       subcategory: '调研'
     },
@@ -142,7 +142,7 @@ const DocsList: React.FC = () => {
     },
     {
       title: 'AR-SDK集成技术',
-      path: '/docs/ar/AR-SDK集成技术调研报告.md',
+      path: '/docs/ar/ar-sdk-integration.md',
       category: 'ar',
       subcategory: '集成'
     },

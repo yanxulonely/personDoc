@@ -341,6 +341,17 @@ const DocsList: React.FC = () => {
           />
         </div>
       </Modal>
+      <Tree
+        showIcon
+        defaultExpandAll
+        treeData={treeData}
+        onSelect={(selectedKeys) => {
+          if (selectedKeys.length > 0) {
+            const path = selectedKeys[0].toString();
+            handleDocSelect(path);
+          }
+        }}
+      />
     </div>
   );
 };

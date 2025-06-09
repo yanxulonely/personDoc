@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -12,7 +12,8 @@ import 'prismjs/components/prism-markup';
 import './styles.css';
 
 interface MarkdownViewerProps {
-  content: string;
+  content?: string;
+  filePath?: string;
 }
 
 export interface MarkdownViewerRef {
@@ -21,16 +22,47 @@ export interface MarkdownViewerRef {
   copyFormattedHtml: () => Promise<void>;
 }
 
-const MarkdownViewer = forwardRef<MarkdownViewerRef, MarkdownViewerProps>(({ content }, ref) => {
+const MarkdownViewer = forwardRef<MarkdownViewerRef, MarkdownViewerProps>(({ content, filePath }, ref) => {
+  const [markdownContent, setMarkdownContent] = useState<string>(content || '');
+
   useEffect(() => {
-    Prism.highlightAll();
-  }, [content]);
+    const loadContent = async () => {
+      if (filePath) {
+        try {
+          // 如果是相对路径，添加public目录前缀
+          const fullPath = filePath.startsWith('/') ? filePath : `/public/${filePath}`;
+          const response = await fetch(fullPath);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const text = await response.text();
+          setMarkdownContent(text);
+        } catch (error) {
+          console.error('Error loading markdown file:', error);
+          message.error('加载文档失败');
+          setMarkdownContent('');
+        }
+      } else if (content) {
+        setMarkdownContent(content);
+      } else {
+        setMarkdownContent('');
+      }
+    };
+
+    loadContent();
+  }, [filePath, content]);
+
+  useEffect(() => {
+    if (markdownContent) {
+      Prism.highlightAll();
+    }
+  }, [markdownContent]);
 
   useImperativeHandle(ref, () => ({
     // 复制原始Markdown文本
     copyOriginalText: async () => {
       try {
-        await navigator.clipboard.writeText(content);
+        await navigator.clipboard.writeText(markdownContent);
         message.success('已复制原始文本');
       } catch (err) {
         message.error('复制失败');
@@ -41,7 +73,7 @@ const MarkdownViewer = forwardRef<MarkdownViewerRef, MarkdownViewerProps>(({ con
     copyPlainText: async () => {
       try {
         const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = content;
+        tempDiv.innerHTML = markdownContent;
         const plainText = tempDiv.textContent || tempDiv.innerText;
         await navigator.clipboard.writeText(plainText);
         message.success('已复制纯文本');
@@ -87,7 +119,7 @@ const MarkdownViewer = forwardRef<MarkdownViewerRef, MarkdownViewerProps>(({ con
           },
         }}
       >
-        {content}
+        {markdownContent}
       </ReactMarkdown>
     </div>
   );
